@@ -74,7 +74,7 @@ class _DoubletAppState extends ConsumerState<DoubletApp> {
     final textTheme = GoogleFonts.robotoSlabTextTheme();
 
     return MaterialApp.router(
-      title: 'Daily Doublet',
+      title: 'DAILY DOUBLET',
       debugShowCheckedModeBanner: false,
       themeMode: themeMode,
       theme: ThemeData(

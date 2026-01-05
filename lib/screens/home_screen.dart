@@ -20,7 +20,13 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Daily Doublet'),
+        title: const Text(
+          'DAILY DOUBLET',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            letterSpacing: 2,
+          ),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
