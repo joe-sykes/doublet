@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO Meta Tags -->
+  <title>Daily Doublet | Transform Words One Letter at a Time</title>
+  <meta name="description" content="Play Daily Doublet, a free daily word ladder puzzle game. Transform one word into another, one letter at a time. New puzzle every day! Build your streak and challenge yourself.">
+  <meta name="keywords" content="word ladder, doublet, word game, daily puzzle, word puzzle, brain game, vocabulary game">
+  <meta name="author" content="Daily Doublet">
+
+  <!-- Open Graph (Facebook, LinkedIn) -->
+  <meta property="og:title" content="Daily Doublet - Word Ladder Puzzle">
+  <meta property="og:description" content="Free daily word ladder puzzle. Transform words one letter at a time. New challenge every day!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://doublet.app">
+  <meta property="og:image" content="https://doublet.app/og-image.png">
+  <meta property="og:site_name" content="Daily Doublet">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Daily Doublet - Word Ladder Puzzle">
+  <meta name="twitter:description" content="Free daily word ladder puzzle. New challenge every day!">
+  <meta name="twitter:image" content="https://doublet.app/twitter-card.png">
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#3F51B5">
+  <meta name="msapplication-TileColor" content="#3F51B5">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Daily Doublet">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon - Puzzle Emoji -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://doublet.app">
+
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Structured Data (JSON-LD) for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Daily Doublet",
+    "description": "Daily word ladder puzzle game. Transform one word into another, one letter at a time.",
+    "url": "https://doublet.app",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Web, Android, iOS",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "Daily Doublet"
+    }
+  }
+  </script>
+
+  <!-- Preconnect to Firebase -->
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+
+  <style>
+    /* Loading indicator while Flutter loads */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fafafa;
+    }
+    @media (prefers-color-scheme: dark) {
+      .loading {
+        background-color: #121212;
+        color: #ffffff;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">
+    <p>Loading Daily Doublet...</p>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function() {
+      document.getElementById('loading').style.display = 'none';
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

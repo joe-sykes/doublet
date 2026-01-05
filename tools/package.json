@@ -1,0 +1,11 @@
+{
+  "name": "doublet-tools",
+  "version": "1.0.0",
+  "description": "Upload tools for Daily Doublet",
+  "scripts": {
+    "upload": "node upload_puzzles.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}
