@@ -100,40 +100,45 @@ class _WordInputTileState extends State<WordInputTile> {
             ),
           ),
 
-          // Text input
+          // Text input - wrapped in AutofillGroup to prevent autofill suggestions
           Expanded(
-            child: TextField(
-              controller: widget.controller,
-              focusNode: widget.focusNode,
-              textCapitalization: TextCapitalization.characters,
-              maxLength: widget.wordLength,
-              textAlign: TextAlign.center,
-              autocorrect: false,
-              enableSuggestions: false,
-              autofillHints: const [],
-              keyboardType: TextInputType.text,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    letterSpacing: 4,
-                    fontWeight: FontWeight.bold,
+            child: AutofillGroup(
+              onDisposeAction: AutofillContextAction.cancel,
+              child: TextField(
+                controller: widget.controller,
+                focusNode: widget.focusNode,
+                textCapitalization: TextCapitalization.characters,
+                maxLength: widget.wordLength,
+                textAlign: TextAlign.center,
+                autocorrect: false,
+                enableSuggestions: false,
+                enableIMEPersonalizedLearning: false,
+                autofillHints: null,
+                keyboardType: TextInputType.visiblePassword,
+                textInputAction: TextInputAction.next,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      letterSpacing: 4,
+                      fontWeight: FontWeight.bold,
+                    ),
+                decoration: InputDecoration(
+                  counterText: '',
+                  border: InputBorder.none,
+                  hintText: '·' * widget.wordLength,
+                  hintStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.outline,
+                    letterSpacing: 8,
                   ),
-              decoration: InputDecoration(
-                counterText: '',
-                border: InputBorder.none,
-                hintText: '·' * widget.wordLength,
-                hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.outline,
-                  letterSpacing: 8,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
+                  UpperCaseTextFormatter(),
+                ],
+                onSubmitted: (_) => widget.onSubmitted(),
               ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
-                UpperCaseTextFormatter(),
-              ],
-              onSubmitted: (_) => widget.onSubmitted(),
             ),
           ),
 

@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'core/utils/web_utils.dart';
 import 'providers/providers.dart';
 import 'screens/home_screen.dart';
 import 'screens/game_screen.dart';
 import 'screens/archive_screen.dart';
 import 'screens/results_screen.dart';
+
+const String kAppTitle = 'Daily Doublet - Word Ladder Puzzle';
 
 /// Maximum content width for better readability on wide screens
 const double kMaxContentWidth = 600.0;
@@ -64,6 +67,7 @@ class _DoubletAppState extends ConsumerState<DoubletApp> {
   Future<void> _initialize() async {
     try {
       await initializeServices(ref);
+      setPageTitle(kAppTitle);
       setState(() => _initialized = true);
     } catch (e) {
       setState(() => _error = e.toString());
@@ -85,9 +89,12 @@ class _DoubletAppState extends ConsumerState<DoubletApp> {
       brightness: Brightness.dark,
     );
 
+    // Set page title on every build to ensure it stays correct
+    setPageTitle(kAppTitle);
+
     return MaterialApp.router(
-      title: 'Daily Doublet - Word Ladder Puzzle',
-      onGenerateTitle: (_) => 'Daily Doublet - Word Ladder Puzzle',
+      title: kAppTitle,
+      onGenerateTitle: (_) => kAppTitle,
       debugShowCheckedModeBanner: false,
       themeMode: themeMode,
       theme: ThemeData(
@@ -161,12 +168,7 @@ class _DoubletAppState extends ConsumerState<DoubletApp> {
           );
         }
 
-        // Wrap with Title widget to ensure browser tab title stays correct
-        return Title(
-          title: 'Daily Doublet - Word Ladder Puzzle',
-          color: Theme.of(context).primaryColor,
-          child: child!,
-        );
+        return child!;
       },
     );
   }

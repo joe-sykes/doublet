@@ -28,8 +28,6 @@ class GameScreen extends ConsumerStatefulWidget {
 class _GameScreenState extends ConsumerState<GameScreen> {
   final List<TextEditingController> _controllers = [];
   final List<FocusNode> _focusNodes = [];
-  final ScrollController _scrollController = ScrollController();
-  final GlobalKey _endWordKey = GlobalKey();
   bool _isSubmitting = false;
   String? _errorMessage;
 
@@ -61,7 +59,6 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       controller.dispose();
     }
     for (final node in _focusNodes) {
-      node.removeListener(_onFocusChange);
       node.dispose();
     }
     _controllers.clear();
@@ -70,49 +67,20 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     // Create new
     for (int i = 0; i < count; i++) {
       _controllers.add(TextEditingController());
-      final focusNode = FocusNode();
-      focusNode.addListener(_onFocusChange);
-      _focusNodes.add(focusNode);
+      _focusNodes.add(FocusNode());
     }
     setState(() {});
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
     for (final controller in _controllers) {
       controller.dispose();
     }
     for (final node in _focusNodes) {
-      node.removeListener(_onFocusChange);
       node.dispose();
     }
     super.dispose();
-  }
-
-  void _onFocusChange() {
-    // When any field gets focus, scroll to ensure end word is visible
-    final hasFocus = _focusNodes.any((node) => node.hasFocus);
-    if (hasFocus) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToShowEndWord();
-      });
-    }
-  }
-
-  void _scrollToShowEndWord() {
-    if (_endWordKey.currentContext != null && _scrollController.hasClients) {
-      // Small delay to let keyboard fully appear
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
-        }
-      });
-    }
   }
 
   void _onWordChanged(int index, String value, Puzzle puzzle) {
@@ -188,9 +156,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         : PuzzleDateUtils.getFirstReleaseDateForPuzzle(_effectiveIndex);
     final dateStr = DateFormat('MMMM d, yyyy').format(puzzleDate);
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
         title: const Text(
           'DAILY DOUBLET',
           style: TextStyle(
@@ -242,6 +212,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           ),
         ),
       ),
+      ),
     );
   }
 
@@ -263,7 +234,6 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  controller: _scrollController,
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
@@ -317,7 +287,6 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
                       // End word (fixed)
                       _WordDisplay(
-                        key: _endWordKey,
                         word: puzzle.endWord,
                         isFixed: true,
                         label: 'End',
@@ -413,7 +382,6 @@ class _WordDisplay extends StatelessWidget {
   final String label;
 
   const _WordDisplay({
-    super.key,
     required this.word,
     required this.isFixed,
     required this.label,
