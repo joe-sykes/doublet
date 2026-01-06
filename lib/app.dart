@@ -87,6 +87,7 @@ class _DoubletAppState extends ConsumerState<DoubletApp> {
 
     return MaterialApp.router(
       title: 'Daily Doublet - Word Ladder Puzzle',
+      onGenerateTitle: (_) => 'Daily Doublet - Word Ladder Puzzle',
       debugShowCheckedModeBanner: false,
       themeMode: themeMode,
       theme: ThemeData(

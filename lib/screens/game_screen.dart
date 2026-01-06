@@ -28,6 +28,8 @@ class GameScreen extends ConsumerStatefulWidget {
 class _GameScreenState extends ConsumerState<GameScreen> {
   final List<TextEditingController> _controllers = [];
   final List<FocusNode> _focusNodes = [];
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _endWordKey = GlobalKey();
   bool _isSubmitting = false;
   String? _errorMessage;
 
@@ -59,6 +61,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
       controller.dispose();
     }
     for (final node in _focusNodes) {
+      node.removeListener(_onFocusChange);
       node.dispose();
     }
     _controllers.clear();
@@ -67,20 +70,49 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     // Create new
     for (int i = 0; i < count; i++) {
       _controllers.add(TextEditingController());
-      _focusNodes.add(FocusNode());
+      final focusNode = FocusNode();
+      focusNode.addListener(_onFocusChange);
+      _focusNodes.add(focusNode);
     }
     setState(() {});
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     for (final controller in _controllers) {
       controller.dispose();
     }
     for (final node in _focusNodes) {
+      node.removeListener(_onFocusChange);
       node.dispose();
     }
     super.dispose();
+  }
+
+  void _onFocusChange() {
+    // When any field gets focus, scroll to ensure end word is visible
+    final hasFocus = _focusNodes.any((node) => node.hasFocus);
+    if (hasFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToShowEndWord();
+      });
+    }
+  }
+
+  void _scrollToShowEndWord() {
+    if (_endWordKey.currentContext != null && _scrollController.hasClients) {
+      // Small delay to let keyboard fully appear
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
   }
 
   void _onWordChanged(int index, String value, Puzzle puzzle) {
@@ -231,6 +263,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             children: [
               Expanded(
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
@@ -247,7 +280,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                               color: Theme.of(context).colorScheme.outline,
                             ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
 
                       // Start word (fixed)
                       _WordDisplay(
@@ -255,12 +288,12 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                         isFixed: true,
                         label: 'Start',
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
 
                       // Input fields
                       ...List.generate(puzzle.inputCount, (index) {
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          padding: const EdgeInsets.symmetric(vertical: 3),
                           child: WordInputTile(
                             controller: _controllers[index],
                             focusNode: _focusNodes[index],
@@ -280,10 +313,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                         );
                       }),
 
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
 
                       // End word (fixed)
                       _WordDisplay(
+                        key: _endWordKey,
                         word: puzzle.endWord,
                         isFixed: true,
                         label: 'End',
@@ -292,7 +326,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                       // Error message
                       if (_errorMessage != null)
                         Padding(
-                          padding: const EdgeInsets.only(top: 16),
+                          padding: const EdgeInsets.only(top: 12),
                           child: Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
@@ -323,6 +357,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
                             ),
                           ),
                         ),
+
+                      // Extra padding at bottom to ensure end word is visible above keyboard
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ),
@@ -376,6 +413,7 @@ class _WordDisplay extends StatelessWidget {
   final String label;
 
   const _WordDisplay({
+    super.key,
     required this.word,
     required this.isFixed,
     required this.label,

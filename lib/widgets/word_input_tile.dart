@@ -108,6 +108,10 @@ class _WordInputTileState extends State<WordInputTile> {
               textCapitalization: TextCapitalization.characters,
               maxLength: widget.wordLength,
               textAlign: TextAlign.center,
+              autocorrect: false,
+              enableSuggestions: false,
+              autofillHints: const [],
+              keyboardType: TextInputType.text,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     letterSpacing: 4,
                     fontWeight: FontWeight.bold,

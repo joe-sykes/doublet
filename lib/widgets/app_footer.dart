@@ -8,35 +8,28 @@ class AppFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final year = DateTime.now().year;
+    final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.outline,
+        );
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Divider(),
           const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 4,
+            runSpacing: 4,
             children: [
-              Text(
-                '© $year Daily Doublet',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '•',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-              ),
-              const SizedBox(width: 8),
+              Text('© $year Daily Doublet', style: textStyle),
+              Text('•', style: textStyle),
               TextButton(
                 onPressed: () => showPrivacyPolicy(context),
                 style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -47,21 +40,14 @@ class AppFooter extends StatelessWidget {
                       ),
                 ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                '•',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
+              Text('•', style: textStyle),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Made for Mills ', style: textStyle),
+                  const Text('❤️', style: TextStyle(fontSize: 12)),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                'Made for Mills ',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-              ),
-              const Text('❤️', style: TextStyle(fontSize: 14)),
             ],
           ),
         ],
