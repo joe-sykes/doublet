@@ -8,11 +8,39 @@ import '../widgets/about_dialog.dart';
 import '../widgets/app_footer.dart';
 import '../widgets/stats_card.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  bool _helpDialogShown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showHelpForFirstTimeUser();
+    });
+  }
+
+  Future<void> _showHelpForFirstTimeUser() async {
+    if (_helpDialogShown) return;
+
+    final hasSeenHelp = ref.read(hasSeenHelpProvider);
+    if (!hasSeenHelp && mounted) {
+      _helpDialogShown = true;
+      showAboutGameDialog(context);
+      // Mark help as seen
+      final storage = ref.read(storageServiceProvider);
+      await storage.markHelpAsSeen();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final puzzleAsync = ref.watch(todaysPuzzleProvider);
     final puzzleNumber = ref.watch(todaysPuzzleNumberProvider);
     final stats = ref.watch(userStatsProvider);

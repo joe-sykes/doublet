@@ -220,6 +220,12 @@ final hasCompletedTodayProvider = Provider<bool>((ref) {
   return storage.hasCompletedTodaysPuzzle();
 });
 
+/// Whether user has seen the help dialog
+final hasSeenHelpProvider = Provider<bool>((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  return storage.hasSeenHelp();
+});
+
 // ============ Theme ============
 
 /// Theme mode state

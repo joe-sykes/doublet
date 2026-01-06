@@ -208,4 +208,16 @@ class StorageService {
     };
     await _prefs.setString(AppConstants.themeModeKey, value);
   }
+
+  // ============ First-time User ============
+
+  /// Check if user has seen the help dialog
+  bool hasSeenHelp() {
+    return _prefs.getBool(AppConstants.hasSeenHelpKey) ?? false;
+  }
+
+  /// Mark that user has seen the help dialog
+  Future<void> markHelpAsSeen() async {
+    await _prefs.setBool(AppConstants.hasSeenHelpKey, true);
+  }
 }

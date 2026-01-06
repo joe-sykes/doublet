@@ -82,6 +82,8 @@ class AboutGameDialog extends StatelessWidget {
 Note: A green tick means the word is valid in the dictionary, but it may not necessarily be the correct answer for the puzzle.''',
                     ),
                     const SizedBox(height: 20),
+                    _buildExample(context),
+                    const SizedBox(height: 20),
                     _buildSection(
                       context,
                       icon: Icons.score,
@@ -118,8 +120,6 @@ Minimum score: 0 points''',
                           'Archive puzzles can be replayed for practice, but they '
                           'do not affect your daily streak.',
                     ),
-                    const SizedBox(height: 20),
-                    _buildExample(context),
                   ],
                 ),
               ),
@@ -196,7 +196,7 @@ Minimum score: 0 points''',
           child: Column(
             children: [
               _ExampleWord(word: 'COLD', highlight: null, label: 'Start'),
-              _ExampleWord(word: 'CORD', highlight: 1, label: 'Changed O→O, L→R'),
+              _ExampleWord(word: 'CORD', highlight: 2, label: 'Changed L→R'),
               _ExampleWord(word: 'CARD', highlight: 1, label: 'Changed O→A'),
               _ExampleWord(word: 'WARD', highlight: 0, label: 'Changed C→W'),
               _ExampleWord(word: 'WARM', highlight: 3, label: 'End'),

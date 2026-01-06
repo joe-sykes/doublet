@@ -19,6 +19,7 @@ class AppConstants {
   static const String puzzleCacheKeyPrefix = 'puzzle_cache_';
   static const String statsKey = 'user_stats';
   static const String themeModeKey = 'theme_mode';
+  static const String hasSeenHelpKey = 'has_seen_help';
 
   /// Firestore collections
   static const String puzzlesCollection = 'puzzles';
