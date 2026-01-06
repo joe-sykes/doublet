@@ -138,14 +138,19 @@ class _WordInputTileState extends State<WordInputTile> {
             width: 40,
             padding: const EdgeInsets.all(8),
             child: _validationResult != null
-                ? Icon(
-                    _validationResult!.isValid
-                        ? Icons.check_circle
-                        : Icons.error,
-                    color: _validationResult!.isValid
-                        ? Colors.green
-                        : Colors.red,
-                    size: 24,
+                ? Tooltip(
+                    message: _validationResult!.isValid
+                        ? 'Valid word (may not be the correct answer)'
+                        : 'Not a valid word',
+                    child: Icon(
+                      _validationResult!.isValid
+                          ? Icons.check_circle
+                          : Icons.error,
+                      color: _validationResult!.isValid
+                          ? Colors.green
+                          : Colors.red,
+                      size: 24,
+                    ),
                   )
                 : _hasBeenEdited
                     ? Icon(

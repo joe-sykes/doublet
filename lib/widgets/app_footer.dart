@@ -16,10 +16,8 @@ class AppFooter extends StatelessWidget {
         children: [
           const Divider(),
           const SizedBox(height: 8),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 16,
-            runSpacing: 8,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 '© $year Daily Doublet',
@@ -27,6 +25,14 @@ class AppFooter extends StatelessWidget {
                       color: Theme.of(context).colorScheme.outline,
                     ),
               ),
+              const SizedBox(width: 8),
+              Text(
+                '•',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+              ),
+              const SizedBox(width: 8),
               TextButton(
                 onPressed: () => showPrivacyPolicy(context),
                 style: TextButton.styleFrom(
@@ -41,12 +47,14 @@ class AppFooter extends StatelessWidget {
                       ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+              const SizedBox(width: 8),
+              Text(
+                '•',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+              ),
+              const SizedBox(width: 8),
               Text(
                 'Made for Mills ',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(

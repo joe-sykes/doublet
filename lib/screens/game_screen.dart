@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
+import '../app.dart';
 import '../core/utils/date_utils.dart';
 import '../models/puzzle.dart';
 import '../providers/providers.dart';
-import '../services/game_validator.dart';
+import '../widgets/about_dialog.dart';
 import '../widgets/word_input_tile.dart';
 
 class GameScreen extends ConsumerStatefulWidget {
@@ -146,12 +148,25 @@ class _GameScreenState extends ConsumerState<GameScreen> {
   Widget build(BuildContext context) {
     final puzzleAsync = ref.watch(puzzleProvider(_effectiveIndex));
     final gameState = ref.watch(gameStateProvider);
+    final themeMode = ref.watch(themeModeProvider);
+
+    // Get puzzle date
+    final puzzleDate = widget.isDaily
+        ? DateTime.now().toUtc()
+        : PuzzleDateUtils.getFirstReleaseDateForPuzzle(_effectiveIndex);
+    final dateStr = DateFormat('MMMM d, yyyy').format(puzzleDate);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(widget.isDaily
-            ? 'Puzzle #${PuzzleDateUtils.getTodaysPuzzleNumber()}'
-            : 'Archive Puzzle'),
+        title: const Text(
+          'DAILY DOUBLET',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            letterSpacing: 2,
+          ),
+        ),
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
@@ -159,9 +174,25 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             context.go('/');
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
+            ),
+            onPressed: () {
+              ref.read(themeModeProvider.notifier).toggleTheme();
+            },
+            tooltip: 'Toggle theme',
+          ),
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => showAboutGameDialog(context),
+            tooltip: 'How to play',
+          ),
+        ],
       ),
       body: puzzleAsync.when(
-        data: (puzzle) => _buildGameContent(puzzle, gameState),
+        data: (puzzle) => _buildGameContent(puzzle, gameState, dateStr),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Column(
@@ -182,135 +213,158 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     );
   }
 
-  Widget _buildGameContent(Puzzle puzzle, gameState) {
+  Widget _buildGameContent(Puzzle puzzle, gameState, String dateStr) {
     if (_controllers.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
     final validator = ref.read(gameValidatorProvider);
+    final puzzleNumber = widget.isDaily
+        ? PuzzleDateUtils.getTodaysPuzzleNumber()
+        : _effectiveIndex + 1;
 
     return SafeArea(
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Start word (fixed)
-                  _WordDisplay(
-                    word: puzzle.startWord,
-                    isFixed: true,
-                    label: 'Start',
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Input fields
-                  ...List.generate(puzzle.inputCount, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: WordInputTile(
-                        controller: _controllers[index],
-                        focusNode: _focusNodes[index],
-                        wordLength: puzzle.wordLength,
-                        onChanged: (value) =>
-                            _onWordChanged(index, value, puzzle),
-                        onSubmitted: () {
-                          if (index < _controllers.length - 1) {
-                            _focusNodes[index + 1].requestFocus();
-                          } else {
-                            _submitSolution(puzzle);
-                          }
-                        },
-                        validator: validator,
-                        stepNumber: index + 2,
-                      ),
-                    );
-                  }),
-
-                  const SizedBox(height: 8),
-
-                  // End word (fixed)
-                  _WordDisplay(
-                    word: puzzle.endWord,
-                    isFixed: true,
-                    label: 'End',
-                  ),
-
-                  // Error message
-                  if (_errorMessage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .errorContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              color:
-                                  Theme.of(context).colorScheme.error,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: kMaxContentWidth),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      // Puzzle date header
+                      Text(
+                        dateStr,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _errorMessage!,
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onErrorContainer,
+                      ),
+                      Text(
+                        'Puzzle #$puzzleNumber',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Start word (fixed)
+                      _WordDisplay(
+                        word: puzzle.startWord,
+                        isFixed: true,
+                        label: 'Start',
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Input fields
+                      ...List.generate(puzzle.inputCount, (index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: WordInputTile(
+                            controller: _controllers[index],
+                            focusNode: _focusNodes[index],
+                            wordLength: puzzle.wordLength,
+                            onChanged: (value) =>
+                                _onWordChanged(index, value, puzzle),
+                            onSubmitted: () {
+                              if (index < _controllers.length - 1) {
+                                _focusNodes[index + 1].requestFocus();
+                              } else {
+                                _submitSolution(puzzle);
+                              }
+                            },
+                            validator: validator,
+                            stepNumber: index + 2,
+                          ),
+                        );
+                      }),
+
+                      const SizedBox(height: 8),
+
+                      // End word (fixed)
+                      _WordDisplay(
+                        word: puzzle.endWord,
+                        isFixed: true,
+                        label: 'End',
+                      ),
+
+                      // Error message
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .errorContainer,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color:
+                                      Theme.of(context).colorScheme.error,
                                 ),
-                              ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _errorMessage!,
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onErrorContainer,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                ],
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
 
-          // Bottom action bar
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, -2),
+              // Bottom action bar
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Row(
-              children: [
-                TextButton(
-                  onPressed: () => _giveUp(puzzle),
-                  child: const Text('Give Up'),
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => _giveUp(puzzle),
+                      child: const Text('Give Up'),
+                    ),
+                    const Spacer(),
+                    FilledButton.icon(
+                      onPressed: _isSubmitting ? null : () => _submitSolution(puzzle),
+                      icon: _isSubmitting
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.check),
+                      label: const Text('Submit'),
+                    ),
+                  ],
                 ),
-                const Spacer(),
-                FilledButton.icon(
-                  onPressed: _isSubmitting ? null : () => _submitSolution(puzzle),
-                  icon: _isSubmitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.check),
-                  label: const Text('Submit'),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

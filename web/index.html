@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- SEO Meta Tags -->
-  <title>DAILY DOUBLET | Transform Words One Letter at a Time</title>
+  <title>Daily Doublet - Word Ladder Puzzle</title>
   <meta name="description" content="Play Daily Doublet, a free daily word ladder puzzle game. Transform one word into another, one letter at a time. New puzzle every day! Build your streak and challenge yourself.">
   <meta name="keywords" content="word ladder, doublet, word game, daily puzzle, word puzzle, brain game, vocabulary game">
   <meta name="author" content="Daily Doublet">
@@ -27,6 +27,9 @@
   <meta name="twitter:description" content="Free daily word ladder puzzle. New challenge every day!">
   <meta name="twitter:image" content="https://doublet.app/twitter-card.png">
 
+  <!-- Prevent URL from becoming title -->
+  <meta name="apple-mobile-web-app-title" content="Daily Doublet">
+
   <!-- Theme Color -->
   <meta name="theme-color" content="#3F51B5">
   <meta name="msapplication-TileColor" content="#3F51B5">
@@ -38,8 +41,8 @@
   <meta name="apple-mobile-web-app-title" content="Daily Doublet">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon - Puzzle Emoji -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Canonical URL -->
@@ -75,25 +78,60 @@
 
   <style>
     /* Loading indicator while Flutter loads */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #fef7ff;
+      overflow: hidden;
+    }
+    @media (prefers-color-scheme: dark) {
+      html, body {
+        background-color: #141218;
+      }
+    }
     .loading {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #fafafa;
+      font-family: 'Roboto Slab', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fef7ff;
+      color: #1a1a1a;
     }
     @media (prefers-color-scheme: dark) {
       .loading {
-        background-color: #121212;
+        background-color: #141218;
         color: #ffffff;
       }
     }
+    .loading-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+    }
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(63, 81, 181, 0.2);
+      border-top-color: #3F51B5;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="loading" id="loading">
-    <p>Loading Daily Doublet...</p>
+    <div class="loading-title">DAILY DOUBLET</div>
+    <div class="loading-spinner"></div>
   </div>
   <script>
     window.addEventListener('flutter-first-frame', function() {

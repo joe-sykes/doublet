@@ -77,7 +77,9 @@ class AboutGameDialog extends StatelessWidget {
 • Each word must differ by exactly one letter from the previous word
 • All words must be valid Scrabble dictionary words
 • Words are validated as you type
-• Submit your answer when all words are filled in''',
+• Submit your answer when all words are filled in
+
+Note: A green tick means the word is valid in the dictionary, but it may not necessarily be the correct answer for the puzzle.''',
                     ),
                     const SizedBox(height: 20),
                     _buildSection(

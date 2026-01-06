@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../app.dart';
 import '../core/utils/date_utils.dart';
 import '../core/utils/scoring_utils.dart';
 import '../providers/providers.dart';
@@ -39,171 +40,174 @@ class ResultsScreen extends ConsumerWidget {
         automaticallyImplyLeading: false,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              // Result icon
-              Icon(
-                wasSuccessful ? Icons.celebration : Icons.sentiment_dissatisfied,
-                size: 80,
-                color: wasSuccessful ? Colors.amber : Colors.grey,
-              ),
-              const SizedBox(height: 16),
-
-              // Result text
-              Text(
-                wasSuccessful ? 'Congratulations!' : 'Better luck next time!',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 32),
-
-              // Score card
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Score',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '$score',
-                        style: Theme.of(context)
-                            .textTheme
-                            .displayLarge
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: _getScoreColor(score),
-                            ),
-                      ),
-                      Text(
-                        'out of 100',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 24),
-                      const Divider(),
-                      const SizedBox(height: 16),
-
-                      // Breakdown
-                      _BreakdownRow(
-                        label: 'Base score',
-                        value: '+${breakdown.baseScore}',
-                        color: Colors.green,
-                      ),
-                      if (breakdown.timePenalty > 0)
-                        _BreakdownRow(
-                          label: 'Time penalty (${breakdown.formattedTime})',
-                          value: '-${breakdown.timePenalty}',
-                          color: Colors.red,
-                        ),
-                      if (breakdown.accuracyPenalty > 0)
-                        _BreakdownRow(
-                          label:
-                              'Mistakes (${breakdown.incorrectSubmissions})',
-                          value: '-${breakdown.accuracyPenalty}',
-                          color: Colors.red,
-                        ),
-                    ],
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: kMaxContentWidth),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  // Result icon
+                  Icon(
+                    wasSuccessful ? Icons.celebration : Icons.sentiment_dissatisfied,
+                    size: 80,
+                    color: wasSuccessful ? Colors.amber : Colors.grey,
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-              // Streak card (only for daily)
-              if (gameState.isDailyPuzzle)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _StatItem(
-                          icon: Icons.local_fire_department,
-                          value: '${stats.currentStreak}',
-                          label: 'Current Streak',
-                          color: Colors.orange,
-                        ),
-                        Container(
-                          width: 1,
-                          height: 40,
-                          color: Theme.of(context).dividerColor,
-                        ),
-                        _StatItem(
-                          icon: Icons.emoji_events,
-                          value: '${stats.longestStreak}',
-                          label: 'Best Streak',
-                          color: Colors.amber,
-                        ),
-                      ],
-                    ),
+                  // Result text
+                  Text(
+                    wasSuccessful ? 'Congratulations!' : 'Better luck next time!',
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                ),
-              const SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
-              // Solution reveal (if failed)
-              if (!wasSuccessful)
-                puzzleAsync.when(
-                  data: (puzzle) => Card(
+                  // Score card
+                  Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(24),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Solution',
+                            'Score',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          const SizedBox(height: 12),
-                          ...puzzle.ladder.map((word) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 4),
-                                child: Text(
-                                  word,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        letterSpacing: 4,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '$score',
+                            style: Theme.of(context)
+                                .textTheme
+                                .displayLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: _getScoreColor(score),
                                 ),
-                              )),
+                          ),
+                          Text(
+                            'out of 100',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 24),
+                          const Divider(),
+                          const SizedBox(height: 16),
+
+                          // Breakdown
+                          _BreakdownRow(
+                            label: 'Base score',
+                            value: '+${breakdown.baseScore}',
+                            color: Colors.green,
+                          ),
+                          if (breakdown.timePenalty > 0)
+                            _BreakdownRow(
+                              label: 'Time penalty (${breakdown.formattedTime})',
+                              value: '-${breakdown.timePenalty}',
+                              color: Colors.red,
+                            ),
+                          if (breakdown.accuracyPenalty > 0)
+                            _BreakdownRow(
+                              label: 'Mistakes (${breakdown.incorrectSubmissions})',
+                              value: '-${breakdown.accuracyPenalty}',
+                              color: Colors.red,
+                            ),
                         ],
                       ),
                     ),
                   ),
-                  loading: () => const SizedBox(),
-                  error: (_, __) => const SizedBox(),
-                ),
-              const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
-              // Share button
-              OutlinedButton.icon(
-                onPressed: () => _shareResult(context, gameState, score),
-                icon: const Icon(Icons.share),
-                label: const Text('Share'),
-              ),
-              const SizedBox(height: 16),
+                  // Streak card (only for daily)
+                  if (gameState.isDailyPuzzle)
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _StatItem(
+                              icon: Icons.local_fire_department,
+                              value: '${stats.currentStreak}',
+                              label: 'Current Streak',
+                              color: Colors.orange,
+                            ),
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: Theme.of(context).dividerColor,
+                            ),
+                            _StatItem(
+                              icon: Icons.emoji_events,
+                              value: '${stats.longestStreak}',
+                              label: 'Best Streak',
+                              color: Colors.amber,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 24),
 
-              // Home button
-              FilledButton.icon(
-                onPressed: () {
-                  ref.read(gameStateProvider.notifier).clearGame();
-                  context.go('/');
-                },
-                icon: const Icon(Icons.home),
-                label: const Text('Back to Home'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
+                  // Solution reveal (if failed)
+                  if (!wasSuccessful)
+                    puzzleAsync.when(
+                      data: (puzzle) => Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Solution',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 12),
+                              ...puzzle.ladder.map((word) => Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 4),
+                                    child: Text(
+                                      word,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
+                                            letterSpacing: 4,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
+                      loading: () => const SizedBox(),
+                      error: (_, __) => const SizedBox(),
+                    ),
+                  const SizedBox(height: 24),
+
+                  // Share button
+                  OutlinedButton.icon(
+                    onPressed: () => _shareResult(context, gameState, score),
+                    icon: const Icon(Icons.share),
+                    label: const Text('Share'),
                   ),
-                ),
+                  const SizedBox(height: 16),
+
+                  // Home button
+                  FilledButton.icon(
+                    onPressed: () {
+                      ref.read(gameStateProvider.notifier).clearGame();
+                      context.go('/');
+                    },
+                    icon: const Icon(Icons.home),
+                    label: const Text('Back to Home'),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

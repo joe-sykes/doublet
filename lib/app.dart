@@ -9,6 +9,9 @@ import 'screens/game_screen.dart';
 import 'screens/archive_screen.dart';
 import 'screens/results_screen.dart';
 
+/// Maximum content width for better readability on wide screens
+const double kMaxContentWidth = 600.0;
+
 /// App router configuration
 final _router = GoRouter(
   initialLocation: '/',
@@ -73,24 +76,29 @@ class _DoubletAppState extends ConsumerState<DoubletApp> {
 
     final textTheme = GoogleFonts.robotoSlabTextTheme();
 
+    final lightColorScheme = ColorScheme.fromSeed(
+      seedColor: Colors.indigo,
+      brightness: Brightness.light,
+    );
+    final darkColorScheme = ColorScheme.fromSeed(
+      seedColor: Colors.indigo,
+      brightness: Brightness.dark,
+    );
+
     return MaterialApp.router(
-      title: 'DAILY DOUBLET',
+      title: 'Daily Doublet - Word Ladder Puzzle',
       debugShowCheckedModeBanner: false,
       themeMode: themeMode,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
-          brightness: Brightness.light,
-        ),
+        colorScheme: lightColorScheme,
+        scaffoldBackgroundColor: lightColorScheme.surface,
         textTheme: textTheme,
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
-          brightness: Brightness.dark,
-        ),
+        colorScheme: darkColorScheme,
+        scaffoldBackgroundColor: darkColorScheme.surface,
         textTheme: textTheme.apply(
           bodyColor: Colors.white,
           displayColor: Colors.white,
@@ -152,7 +160,12 @@ class _DoubletAppState extends ConsumerState<DoubletApp> {
           );
         }
 
-        return child!;
+        // Wrap with Title widget to ensure browser tab title stays correct
+        return Title(
+          title: 'Daily Doublet - Word Ladder Puzzle',
+          color: Theme.of(context).primaryColor,
+          child: child!,
+        );
       },
     );
   }

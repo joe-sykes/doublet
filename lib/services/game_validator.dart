@@ -32,7 +32,7 @@ class GameValidator {
   }
 
   /// Validate complete ladder at submission time
-  /// This checks if user solution matches the puzzle solution exactly
+  /// This checks if user solution forms a valid word ladder path
   GameValidationResult validateSubmission({
     required Puzzle puzzle,
     required List<String> userWords,
@@ -54,10 +54,23 @@ class GameValidator {
       return GameValidationResult.incorrect('Incorrect number of words');
     }
 
-    // Compare with solution (exact match required)
-    for (int i = 0; i < puzzle.ladder.length; i++) {
-      if (completeLadder[i] != puzzle.ladder[i]) {
-        return GameValidationResult.incorrect('Incorrect solution');
+    // Validate each word is in the dictionary and transitions are valid
+    for (int i = 0; i < completeLadder.length; i++) {
+      final word = completeLadder[i];
+
+      // Check word is in dictionary (skip start and end words as they're given)
+      if (i > 0 && i < completeLadder.length - 1) {
+        if (!_dictionaryService.isValidWord(word)) {
+          return GameValidationResult.incorrect('Word not in dictionary: $word');
+        }
+      }
+
+      // Check transition from previous word (each pair must differ by exactly one letter)
+      if (i > 0) {
+        if (!isValidTransition(completeLadder[i - 1], word)) {
+          return GameValidationResult.incorrect(
+              'Invalid transition: ${completeLadder[i - 1]} → $word');
+        }
       }
     }
 

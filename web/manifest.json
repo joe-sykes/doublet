@@ -1,13 +1,14 @@
 {
-    "name": "doublet",
-    "short_name": "doublet",
+    "name": "Daily Doublet - Word Ladder Puzzle",
+    "short_name": "Daily Doublet",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#fef7ff",
+    "theme_color": "#3F51B5",
+    "description": "A daily word ladder puzzle game. Transform one word into another, one letter at a time.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "categories": ["games", "entertainment", "education"],
     "icons": [
         {
             "src": "icons/Icon-192.png",
@@ -30,6 +31,21 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
+        }
+    ],
+    "screenshots": [],
+    "shortcuts": [
+        {
+            "name": "Play Today's Puzzle",
+            "short_name": "Play",
+            "url": "/play",
+            "icons": [{"src": "icons/Icon-192.png", "sizes": "192x192"}]
+        },
+        {
+            "name": "Browse Archive",
+            "short_name": "Archive",
+            "url": "/archive",
+            "icons": [{"src": "icons/Icon-192.png", "sizes": "192x192"}]
         }
     ]
 }
