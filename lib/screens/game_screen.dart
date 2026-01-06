@@ -159,7 +159,7 @@ class _GameScreenState extends ConsumerState<GameScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
         title: const Text(
           'DAILY DOUBLET',

@@ -5,7 +5,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 
   <!-- SEO Meta Tags -->
   <title>Daily Doublet - Word Ladder Puzzle</title>
@@ -137,6 +137,78 @@
     window.addEventListener('flutter-first-frame', function() {
       document.getElementById('loading').style.display = 'none';
     });
+
+    // Enforce fixed page title using MutationObserver
+    (function() {
+      const APP_TITLE = 'Daily Doublet - Word Ladder Puzzle';
+      document.title = APP_TITLE;
+
+      // Watch for title changes and revert them
+      const titleElement = document.querySelector('title');
+      if (titleElement) {
+        const observer = new MutationObserver(function() {
+          if (document.title !== APP_TITLE) {
+            document.title = APP_TITLE;
+          }
+        });
+        observer.observe(titleElement, { childList: true, characterData: true, subtree: true });
+      }
+
+      // Also watch for title element being replaced
+      const headObserver = new MutationObserver(function() {
+        if (document.title !== APP_TITLE) {
+          document.title = APP_TITLE;
+        }
+      });
+      headObserver.observe(document.head, { childList: true, subtree: true });
+    })();
+
+    // Disable autofill on all inputs (prevents password/payment suggestions)
+    (function() {
+      // Disable autofill on any input that gets added to the page
+      const observer = new MutationObserver(function(mutations) {
+        document.querySelectorAll('input, textarea').forEach(function(input) {
+          input.setAttribute('autocomplete', 'off');
+          input.setAttribute('autocorrect', 'off');
+          input.setAttribute('autocapitalize', 'off');
+          input.setAttribute('spellcheck', 'false');
+          input.setAttribute('data-form-type', 'other');
+          input.setAttribute('data-lpignore', 'true');
+          input.setAttribute('aria-autocomplete', 'none');
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    })();
+
+    // Fix keyboard dismiss leaving white space on mobile
+    (function() {
+      if (!window.visualViewport) return;
+
+      let keyboardOpen = false;
+      const initialHeight = window.visualViewport.height;
+
+      window.visualViewport.addEventListener('resize', function() {
+        const currentHeight = window.visualViewport.height;
+        const heightDiff = initialHeight - currentHeight;
+
+        // Keyboard opened (height decreased significantly)
+        if (heightDiff > 150) {
+          keyboardOpen = true;
+        }
+        // Keyboard closed (height back to normal)
+        else if (keyboardOpen && heightDiff < 50) {
+          keyboardOpen = false;
+
+          // Blur the active element to trigger Flutter's resize
+          if (document.activeElement && document.activeElement.blur) {
+            document.activeElement.blur();
+          }
+
+          // Force scroll reset
+          window.scrollTo(0, 0);
+        }
+      });
+    })();
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
